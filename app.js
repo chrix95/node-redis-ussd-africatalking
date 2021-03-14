@@ -6,7 +6,7 @@ const {router} = require('./routes/api/default');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/api", router);
+app.use("/", router);
 
 const PORT = process.env.PORT || 3000;
 
