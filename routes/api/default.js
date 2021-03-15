@@ -3,18 +3,6 @@ const router = express.Router();
 const { ussdRouter } = require('ussd-router');
 const utilsController = require("../../controller/utils");
 
-router.get("/check", async (req, res) => {
-    let value = { firstname: 'devchris' } 
-    if (data = await utilsController.getRedisData('ATUid_ecbff9022952127f6ce1d682c9b56706')) {
-        const done = await utilsController.setRedisData('ATUid_ecbff9022952127f6ce1d682c9b56706', {...data, ...value})
-        console.log(`Data dey: ${done}`)
-    } else {
-        const done = await utilsController.setRedisData('ATUid_ecbff9022952127f6ce1d682c9b56706', value)
-        console.log(`Data no dey: ${done}`)
-    }
-    res.sendStatus(200).send();
-})
-
 router.post("/", async (req, res) => {
     // Read variables sent via POST from our SDK
     const { sessionId, serviceCode, phoneNumber, text } = req.body;
