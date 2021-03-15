@@ -42,7 +42,19 @@ const fetchTitle = async () => {
     }
 }
 
+const setRegisterInfo = async (sessionId, value) => {
+    if (data = await getRedisData(sessionId)) {
+        await setRedisData(sessionId, {...data, ...value})
+        // console.log(`Data dey: ${done}`)
+        // console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
+    } else {
+        await setRedisData(sessionId, value)
+        // console.log(`Data no dey: ${done}`)
+        // console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
+    }
+}
+
 module.exports = {
-    setRedisData, getRedisData, fetchTitle
+    setRedisData, getRedisData, fetchTitle, setRegisterInfo
 }
 
