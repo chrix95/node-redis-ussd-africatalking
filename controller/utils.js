@@ -42,19 +42,33 @@ const fetchTitle = async () => {
     }
 }
 
-const setRegisterInfo = async (sessionId, value) => {
+const setAuthenticationInfo = async (sessionId, value) => {
     if (data = await getRedisData(sessionId)) {
-        await setRedisData(sessionId, {...data, ...value})
+        await setRedisData(sessionId, { ...data, auth: value });
         // console.log(`Data dey: ${done}`)
         // console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
     } else {
-        await setRedisData(sessionId, value)
+        await setRedisData(sessionId, { auth: value});
+        // console.log(`Data no dey: ${done}`)
+        // console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
+    }
+}
+
+const setRegisterInfo = async (sessionId, value) => {
+    if (data = await getRedisData(sessionId)) {
+        // await setRedisData(sessionId, {...data, ...value})
+        await setRedisData(sessionId, { ...data, registration: {...data.registration, ...value} })
+        // console.log(`Data dey: ${done}`)
+        // console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
+    } else {
+        // await setRedisData(sessionId, value)
+        await setRedisData(sessionId, { registration: value })
         // console.log(`Data no dey: ${done}`)
         // console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
     }
 }
 
 module.exports = {
-    setRedisData, getRedisData, fetchTitle, setRegisterInfo
+    setRedisData, getRedisData, fetchTitle, setAuthenticationInfo, setRegisterInfo
 }
 
