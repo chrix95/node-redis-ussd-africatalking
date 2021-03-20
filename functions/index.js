@@ -53,11 +53,20 @@ const getHealthMetrics = async (phone, input) => {
     }
 }
 
+const contactHealthCoach = async (phone, message) => {
+    try {
+        const payload = { phone: phone.replace("+", ""), reason: message }
+        const response = await instance.post("/contact_coach", payload);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        return { status: "error" }
+    }
+}
+
 const registerUser = async (payload) => {
-    console.log(JSON.stringify(payload))
     try {
         const response = await instance.post("/register_member", payload);
-        console.log(JSON.stringify(response))
         return { status, data } = response.data;
     } catch (error) {
         console.log(error);
@@ -72,5 +81,6 @@ module.exports = {
     getUserInfo, 
     registerUser,
     getTeleEducationSession,
-    getHealthMetrics
+    getHealthMetrics,
+    contactHealthCoach
 }

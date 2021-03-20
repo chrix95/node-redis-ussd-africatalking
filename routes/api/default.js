@@ -163,8 +163,12 @@ router.post("/", async ( req, res) => {
         // Collect all required health metric input and send to the API
     } else if (ussd_string_exploded[0] === "6" && $level === 2) {
         // send the value to the API for contact health coach
-        console.log(ussd_string_exploded[1])
-        response += `END Thank you! A health coach will contact you shortly.`
+        const { status, data } = await initiateRequest.contactHealthCoach(phoneNumber, ussd_string_exploded[1])
+        if (status == "success") {
+            response += `END Thank you! A health coach will contact you shortly.`
+        } else {
+            response += `END We could not connect to server, kindly try again.`
+        }
     } else {
         response += `END Unable to process request, please try again in 5 minutes`
     }
