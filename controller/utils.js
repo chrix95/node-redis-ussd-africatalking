@@ -22,25 +22,27 @@ const getRedisData = async (key) => {
 const setAuthenticationInfo = async (sessionId, value) => {
     if (data = await getRedisData(sessionId)) {
         await setRedisData(sessionId, { ...data, auth: value });
-        // console.log(`Data dey: ${done}`)
-        // console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
     } else {
         await setRedisData(sessionId, { auth: value});
-        // console.log(`Data no dey: ${done}`)
-        // console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
     }
 }
 
 const setRegisterInfo = async (sessionId, value) => {
     if (data = await getRedisData(sessionId)) {
-        // await setRedisData(sessionId, {...data, ...value})
         await setRedisData(sessionId, { ...data, registration: {...data.registration, ...value} })
-        // console.log(`Data dey: ${done}`)
         console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
     } else {
-        // await setRedisData(sessionId, value)
         await setRedisData(sessionId, { registration: value })
-        // console.log(`Data no dey: ${done}`)
+        console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
+    }
+}
+
+const setHealthMetrics = async (sessionId, value) => {
+    if (data = await getRedisData(sessionId)) {
+        await setRedisData(sessionId, { ...data, metrics: {...data.metrics, ...value} })
+        console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
+    } else {
+        await setRedisData(sessionId, { metrics: value })
         console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
     }
 }
@@ -77,23 +79,29 @@ const healthMetrics = [
     {
         id: 3,
         title: "BP",
-        code: "bp",
+        code: "blood_pressure",
         measurement: "mm/Hg"
     },
     {
         id: 4,
-        title: "Blood sugar",
-        code: "blood_sugar",
-        measurement: "mm/Hg"
+        title: "Fasting Blood sugar",
+        code: "fasting_blood_sugar",
+        measurement: "mg/dl"
     },
     {
         id: 5,
+        title: "Random Blood sugar",
+        code: "random_blood_sugar",
+        measurement: "mg/dl"
+    },
+    {
+        id: 6,
         title: "Physical activity",
         code: "physical_activity",
         measurement: "kg"
     },
     {
-        id: 5,
+        id: 7,
         title: "Waist circumference",
         code: "waist_circumference",
         measurement: "cm"
@@ -105,6 +113,7 @@ module.exports = {
     getRedisData, 
     setAuthenticationInfo, 
     setRegisterInfo,
+    setHealthMetrics,
     splitName,
     healthMetrics
 }

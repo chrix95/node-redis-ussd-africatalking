@@ -76,11 +76,24 @@ const registerUser = async (payload) => {
     }
 }
 
+const sendHealthMetrics = async (payload) => {
+    try {
+        const response = await instance.post("/add_metrics", payload);
+        return { status, data } = response.data;
+    } catch (error) {
+        console.log(error);
+        return {
+            "status": "error"
+        }
+    }
+}
+
 module.exports = {
     getHubList, 
     getUserInfo, 
     registerUser,
     getTeleEducationSession,
     getHealthMetrics,
-    contactHealthCoach
+    contactHealthCoach,
+    sendHealthMetrics
 }

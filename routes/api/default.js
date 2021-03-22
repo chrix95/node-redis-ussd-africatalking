@@ -76,7 +76,7 @@ router.post("/", async ( req, res) => {
         response += `CON Please briefly (in 10 words or less) type your reason for wanting to contact a health coach\n`
         response += footer
     } else if (textVal == "1*1") {
-        response += `CON Enter your name (First name, Last name)? \n`;
+        response += `CON Please enter your name (First name, Last name): \n`;
         response += footer
     } else if (textVal == "1*2") {
         // Fetch the available hubs
@@ -95,41 +95,41 @@ router.post("/", async ( req, res) => {
         const nameObj = utilsController.splitName(ussd_string_exploded[2])
         // store the name of the user
         utilsController.setRegisterInfo(sessionId, nameObj)
-        response += `CON Enter your email address? \n`
+        response += `CON Please enter your email address: \n`
         response += `1. No email address \n`
         response += footer
     } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 4) {
         // store the email of the user
         utilsController.setRegisterInfo(sessionId, {email: ussd_string_exploded[3] != "1" ? ussd_string_exploded[3] : "" })
-        response += `CON Enter your Date of Birth (DD/MM/YYYY)? \n`
+        response += `CON Please enter your Date of Birth (DD/MM/YYYY): \n`
         response += footer
     } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 5) {
         // store the dob of the user
         utilsController.setRegisterInfo(sessionId, {dateOfBirth: ussd_string_exploded[4].split("/").reverse().join("/")})
-        response += `CON Enter your gender (Female/Male)? \n`
+        response += `CON Please select your gender (Female/Male): \n`
         response += footer
     } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 6) {
         // store the gender of the user
         utilsController.setRegisterInfo(sessionId, {gender: ussd_string_exploded[5]})
-        response += `CON Enter your LGA? \n`
+        response += `CON Please enter your Local Government Area: \n`
         response += footer
     } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 7) {
         // store the lGA of the user
         utilsController.setRegisterInfo(sessionId, {lga: ussd_string_exploded[6]})
-        response += `CON Enter your height (cm)? \n`
-        response += `1. I don't know? \n`
+        response += `CON Please enter your height (cm): \n`
+        response += `1. I don't know \n`
         response += footer
     } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 8) {
         // store the height of the user
         utilsController.setRegisterInfo(sessionId, {height: ussd_string_exploded[7] != "1" ? ussd_string_exploded[7] : "" })
-        response += `CON Enter your weight (kg)? \n`
-        response += `1. I don't know? \n`
+        response += `CON Please enter your weight (kg): \n`
+        response += `1. I don't know \n`
         response += footer
     } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 9) {
         // store the weight of the user
         utilsController.setRegisterInfo(sessionId, {weight: ussd_string_exploded[8] != "1" ? ussd_string_exploded[8] : ""})
-        response += `CON Enter your waist circumference (cm)? \n`
-        response += `1. I don't know? \n`
+        response += `CON Please enter your waist circumference (cm): \n`
+        response += `1. I don't know \n`
         response += footer
     } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 10) {
         // store the waist circumference of the user
@@ -153,7 +153,7 @@ router.post("/", async ( req, res) => {
         if (status == "success" && data.length > 0) {
             response += `CON Here is your ${metric.title} (${metric.measurement}) over the last 7 days: \n`
             data.forEach(element => {
-                response += `${element.dateEntered.substring(0,10)}: ${element.value} \n`
+                response += `${element.dateEntered.substring(0,10)}: ${element.value} ${metric.measurement} \n`
             });
         } else {
             response += `CON Sorry you haven't entered any ${metric.title} health metric.\n`
@@ -161,6 +161,31 @@ router.post("/", async ( req, res) => {
         response += footer
     } else if (ussd_string_exploded[0] === "5" && $level === 2) {
         // Collect all required health metric input and send to the API
+        const object = { type: await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1]).code }
+        utilsController.setHealthMetrics(sessionId, object)
+        response += `CON What date is this measurement for? (DD/MM/YYYY)`
+        response += footer
+    } else if (ussd_string_exploded[0] === "5" && $level === 3) {
+        const object = { date:  ussd_string_exploded[2].split("/").reverse().join("/") }
+        // store the name of the user
+        utilsController.setHealthMetrics(sessionId, object)
+        const { title, measurement } = await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1])
+        response += `CON What is your ${title} (${measurement})?`
+        response += footer
+    } else if (ussd_string_exploded[0] === "5" && $level === 4) {
+        const object = { value:  ussd_string_exploded[3] }
+        // store the name of the user
+        await utilsController.setHealthMetrics(sessionId, object)
+        // send the request
+        const payload = await utilsController.getRedisData(sessionId)
+        const { status } = await initiateRequest.sendHealthMetrics({ ...payload.metrics, ...{phone: phoneNumber.replace("+", "") }})
+        if (status == "success") {
+            // send a request to create the user account and response with feedback
+            response += `CON Thank you. Please visit mymdoc.com to access the CompleteHealth platform and view your progress\n`
+        } else {
+            response += `CON Sorry we could not register your account at the moment, kindly try again`
+        }
+        response += footer
     } else if (ussd_string_exploded[0] === "6" && $level === 2) {
         // send the value to the API for contact health coach
         const { status, data } = await initiateRequest.contactHealthCoach(phoneNumber, ussd_string_exploded[1])
