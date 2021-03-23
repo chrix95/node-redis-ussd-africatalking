@@ -46,6 +46,7 @@ const getHealthMetrics = async (phone, input) => {
         const payload = { phone: phone.replace("+", ""), type: metric.code }
         const response = await instance.post("/retrieve_metrics", payload);
         const result = response.data;
+        console.log(JSON.stringify(result))
         return { ...result, metric: {...metric} }
     } catch (error) {
         console.log(error);
