@@ -139,7 +139,7 @@ router.post("/", async ( req, res) => {
         const { status } = await initiateRequest.registerUser({...payload.registration, ...{phone: phoneNumber.replace("+", "")}})
         if (status == "success") {
             // send a request to create the user account and response with feedback
-            response += `CON Congratulations, ${payload.registration.firstName}! You are now a member of mDoc.  Explore the various options on our menu to track your metrics and personalise your care. We are here to help you live a healthier life!\n`
+            response += `CON Congratulations, ${payload.registration.firstName}! You are now a member of mDoc. Explore the various options on our menu to track your metrics and personalise your care. We are here to help you live a healthier life!\n`
             response += `0. Menu`
         } else {
             response += `END Sorry we could not register your account at the moment, kindly try again`
@@ -181,9 +181,9 @@ router.post("/", async ( req, res) => {
         const { status } = await initiateRequest.sendHealthMetrics({ ...payload.metrics, ...{phone: phoneNumber.replace("+", "") }})
         if (status == "success") {
             // send a request to create the user account and response with feedback
-            response += `CON Thank you. Please visit mymdoc.com to access the CompleteHealth platform and view your progress\n`
+            response += `CON Thank you! Please visit mymdoc.com to access the CompleteHealth platform and view your progress.\n`
         } else {
-            response += `CON Sorry we could not register your account at the moment, kindly try again`
+            response += `CON Sorry we could not add your health metric at the moment, kindly try again`
         }
         response += footer
     } else if (ussd_string_exploded[0] === "6" && $level === 2) {
