@@ -41,7 +41,7 @@ router.post("/", async ( req, res) => {
             response += `END You are a registered member of mDoc, feel free to explore other available options`
         } else {
             response += `CON 1. Register via USSD \n`
-            response += `2. Register at one of our NudgeHubs \n`
+            response += `2. Register in-person at our NudgeHub \n`
             response += footer
         }
     } else if (textVal == "2") {
@@ -51,9 +51,9 @@ router.post("/", async ( req, res) => {
         if (status == "success") {
             response += `END The next 3 Tele-education classes will be on: \n`
             data.forEach((element) => {
-                response += `${element.data}: ${element.title}\n`
+                response += `${element.date}: ${element.title}\n`
             })
-            response += `Find the link on our social media platforms @mymdoc on Facebook and Instagram`
+            response += `\nFor more information, visit @mymdoc on Facebook and Instagram`
         } else {
             response += `END Sorry no classes are currently available, we will reachout once available.`
         }
@@ -139,7 +139,7 @@ router.post("/", async ( req, res) => {
         const { status } = await initiateRequest.registerUser({...payload.registration, ...{phone: phoneNumber.replace("+", "")}})
         if (status == "success") {
             // send a request to create the user account and response with feedback
-            response += `CON Congratulations! You are now a member of mDoc. We are here to help you live a healthy life! Explore the various options on our menu to track your metrics and personalise your care. We are here for you.\n`
+            response += `CON Congratulations, ${payload.registration.firstName}! You are now a member of mDoc.  Explore the various options on our menu to track your metrics and personalise your care. We are here to help you live a healthier life!\n`
             response += `0. Menu`
         } else {
             response += `END Sorry we could not register your account at the moment, kindly try again`
