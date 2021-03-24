@@ -68,31 +68,36 @@ const healthMetrics = [
         id: 1,
         title: "Weight",
         code: "weight",
-        measurement: "kg"
+        measurement: "kg",
+        sample: "75"
     },
     {
         id: 2,
         title: "Weight Goal",
         code: "weight_goal",
         measurement: "kg",
+        sample: "60"
     },
     {
         id: 3,
         title: "BP",
         code: "blood_pressure",
-        measurement: "mm/Hg"
+        measurement: "mm/Hg",
+        sample: "120/80"
     },
     {
         id: 4,
         title: "Fasting Blood sugar",
         code: "fasting_blood_sugar",
-        measurement: "mg/dl"
+        measurement: "mg/dl",
+        sample: "80"
     },
     {
         id: 5,
         title: "Random Blood sugar",
         code: "random_blood_sugar",
-        measurement: "mg/dl"
+        measurement: "mg/dl",
+        sample: "80"
     },
     {
         id: 6,
@@ -104,9 +109,21 @@ const healthMetrics = [
         id: 7,
         title: "Waist circumference",
         code: "waist_circumference",
-        measurement: "cm"
+        measurement: "cm",
+        sample: "32"
+    },
+    {
+        id: 8,
+        title: "Height",
+        code: "height",
+        measurement: "cm",
+        sample: "120"
     },
 ]
+
+const sortItem = (payload) => {
+    return payload.sort((a, b) => a.updated_at < b.updated_at ? -1 : 1)
+}
 
 module.exports = {
     setRedisData, 

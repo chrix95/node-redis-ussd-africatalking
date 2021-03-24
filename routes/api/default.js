@@ -169,8 +169,8 @@ router.post("/", async ( req, res) => {
         const object = { date:  ussd_string_exploded[2].split("/").reverse().join("/") }
         // store the name of the user
         utilsController.setHealthMetrics(sessionId, object)
-        const { title, measurement } = await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1])
-        response += `CON What is your ${title} (${measurement})?`
+        const { title, measurement, sample } = await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1])
+        response += `CON What is your ${title} (${measurement}) (Sample: ${sample})?`
         response += footer
     } else if (ussd_string_exploded[0] === "5" && $level === 4) {
         const object = { value:  ussd_string_exploded[3] }
