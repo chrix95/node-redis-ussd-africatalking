@@ -30,7 +30,7 @@ router.post("/", async ( req, res) => {
         response += `1. Register with mDoc\n`
         response += `2. Information about Tele-education classes \n`
         response += `3. Renew/Upgrade mDoc membership \n`
-        response += `4. Look at my Health Metrics \n`
+        response += `4. View health metrics \n`
         response += `5. Put in my Health Metrics \n`
         // show the below if the member has paid
         response += `6. Contact a health coach`
@@ -61,7 +61,7 @@ router.post("/", async ( req, res) => {
         response += `CON We offer monthly subscription plans. This service is currently free. We will update it shortly\n`
         response += footer
     } else if (textVal == "4") {
-        response += `CON What would you like to look at?\n`
+        response += `CON What would you like to view?\n`
         utilsController.healthMetrics.forEach((element) => {
             response += `${element.id}. ${element.title} \n`
         });
@@ -139,14 +139,14 @@ router.post("/", async ( req, res) => {
         const { status } = await initiateRequest.registerUser({...payload.registration, ...{phone: phoneNumber.replace("+", "")}})
         if (status == "success") {
             // send a request to create the user account and response with feedback
-            response += `CON Congratulations! You are now a member of mDoc and we are here to help you live a healthy life! To access our full complement of features, dial *xxxx# to choose a subscription plan.\n`
-            response += `1. Next`
+            response += `CON Congratulations! You are now a member of mDoc. We are here to help you live a healthy life! Explore the various options on our menu to track your metrics and personalise your care. We are here for you.\n`
+            response += `0. Menu`
         } else {
             response += `END Sorry we could not register your account at the moment, kindly try again`
         }
-    } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 11) {
-        // send a request to create the user account and response with feedback
-        response += `END Please visit mymdoc.com or one of our NudgeHubsTM or dial *xxx# to enter and view your health metrics`
+    // } else if (ussd_string_exploded[0] === "1" && ussd_string_exploded[1] === "1" && $level === 11) {
+    //     // send a request to create the user account and response with feedback
+    //     response += `END Please visit mymdoc.com or one of our NudgeHubsTM or dial *xxx# to enter and view your health metrics`
     } else if (ussd_string_exploded[0] === "4" && $level === 2) {
         // Split input into firstname and lastname
         const { status, data, metric } = await initiateRequest.getHealthMetrics(phoneNumber, ussd_string_exploded[1])
