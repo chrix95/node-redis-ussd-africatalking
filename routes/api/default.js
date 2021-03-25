@@ -161,20 +161,39 @@ router.post("/", async ( req, res) => {
         response += footer
     } else if (ussd_string_exploded[0] === "5" && $level === 2) {
         // Collect all required health metric input and send to the API
-        const object = { type: await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1]).code }
-        utilsController.setHealthMetrics(sessionId, object)
-        response += `CON What date is this measurement for? (DD/MM/YYYY)`
-        response += footer
+        if (ussd_string_exploded[1] == 8) {
+            const { title, measurement, sample } = await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1])
+            response += `CON What is your ${title} (${measurement}) (Sample: ${sample})?`
+        } else {
+            const object = { type: await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1]).code }
+            utilsController.setHealthMetrics(sessionId, object)
+            response += `CON What date is this measurement for? (DD/MM/YYYY)`
+            response += footer
+        }
     } else if (ussd_string_exploded[0] === "5" && $level === 3) {
-        const object = { date:  ussd_string_exploded[2].split("/").reverse().join("/") }
-        // store the name of the user
-        utilsController.setHealthMetrics(sessionId, object)
-        const { title, measurement, sample } = await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1])
-        response += `CON What is your ${title} (${measurement}) (Sample: ${sample})?`
-        response += footer
+        if (ussd_string_exploded[1] == 8) {
+            const object = { height:  ussd_string_exploded[2] }
+            await utilsController.setHealthMetrics(sessionId, object)
+            // send the request
+            const payload = await utilsController.getRedisData(sessionId)
+            const { status } = await initiateRequest.sendHealthMetrics({ ...payload.metrics, ...{phone: phoneNumber.replace("+", "") }})
+            if (status == "success") {
+                // send a request to create the user account and response with feedback
+                response += `CON Thank you! Please visit mymdoc.com to access the CompleteHealth platform and view your progress.\n`
+            } else {
+                response += `CON Sorry we could not add your health metric at the moment, kindly try again`
+            }
+            response += footer
+        } else {
+            const object = { date:  ussd_string_exploded[2].split("/").reverse().join("/") }
+            // store the name of the user
+            utilsController.setHealthMetrics(sessionId, object)
+            const { title, measurement, sample } = await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1])
+            response += `CON What is your ${title} (${measurement}) (Sample: ${sample})?`
+            response += footer
+        }
     } else if (ussd_string_exploded[0] === "5" && $level === 4) {
         const object = { value:  ussd_string_exploded[3] }
-        // store the name of the user
         await utilsController.setHealthMetrics(sessionId, object)
         // send the request
         const payload = await utilsController.getRedisData(sessionId)
@@ -203,6 +222,10 @@ router.post("/", async ( req, res) => {
     }
     res.status(200).send(response)
 })
+
+function handleHeight() {
+
+}
 
 module.exports = {
     router

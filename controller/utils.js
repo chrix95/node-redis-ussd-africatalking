@@ -116,8 +116,8 @@ const healthMetrics = [
         id: 8,
         title: "Height",
         code: "height",
-        measurement: "cm",
-        sample: "120"
+        measurement: "meters",
+        sample: "1.4"
     },
 ]
 

@@ -79,7 +79,12 @@ const registerUser = async (payload) => {
 
 const sendHealthMetrics = async (payload) => {
     try {
-        const response = await instance.post("/add_metrics", payload);
+        let response;
+        if (payload.hasOwnProperty('height')) {
+            response = await instance.post("/update_height", payload);
+        } else {
+            response = await instance.post("/add_metrics", payload);
+        }
         return { status, data } = response.data;
     } catch (error) {
         console.log(error);
