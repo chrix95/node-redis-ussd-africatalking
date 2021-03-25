@@ -102,7 +102,7 @@ const healthMetrics = [
     {
         id: 6,
         title: "Physical activity",
-        code: "physical_activity",
+        code: "exercise",
         measurement: "kg"
     },
     {
@@ -121,6 +121,39 @@ const healthMetrics = [
     },
 ]
 
+const physicalExercise = [
+    {
+        id:66,
+        sn:1,
+        name:"Walking"
+    },
+    {
+        id:16,
+         sn:2,
+        name:"Fitness walking"
+    },
+    {
+        id:1,
+         sn:3,
+        name:"Aerobics"
+    },
+    {
+        id:13,
+         sn:4,
+        name:"Dancing"
+    },
+    {
+        id:56,
+         sn:5,
+        name:"Running"
+    },
+    {
+        id:34,
+        sn:6,
+        name:"Other"
+    }
+]
+
 const sortItem = (payload) => {
     return payload.sort((a, b) => a.updated_at < b.updated_at ? -1 : 1)
 }
@@ -132,6 +165,7 @@ module.exports = {
     setRegisterInfo,
     setHealthMetrics,
     splitName,
-    healthMetrics
+    healthMetrics,
+    physicalExercise
 }
 
