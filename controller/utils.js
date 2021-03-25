@@ -47,6 +47,16 @@ const setHealthMetrics = async (sessionId, value) => {
     }
 }
 
+const setExercise = async (sessionId, value) => {
+    if (data = await getRedisData(sessionId)) {
+        await setRedisData(sessionId, { ...data, exercise: {...data.exercise, ...value} })
+        console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
+    } else {
+        await setRedisData(sessionId, { exercise: value })
+        console.log(`Get: ${JSON.stringify(await getRedisData(sessionId))}`)
+    }
+}
+
 const splitName = (payload) => {
     const values = payload.split(", ")
     if (values.length > 1) {
@@ -102,8 +112,8 @@ const healthMetrics = [
     {
         id: 6,
         title: "Physical activity",
-        code: "exercise",
-        measurement: "kg"
+        code: "exercise"
+        // measurement: "kg"
     },
     {
         id: 7,
@@ -123,29 +133,29 @@ const healthMetrics = [
 
 const physicalExercise = [
     {
-        id:66,
-        sn:1,
-        name:"Walking"
-    },
-    {
-        id:16,
-         sn:2,
-        name:"Fitness walking"
-    },
-    {
         id:1,
-         sn:3,
+        sn:1,
         name:"Aerobics"
     },
     {
         id:13,
-         sn:4,
+        sn:2,
         name:"Dancing"
     },
     {
+        id:16,
+        sn:3,
+        name:"Fitness walking"
+    },
+    {
         id:56,
-         sn:5,
+        sn:4,
         name:"Running"
+    },
+    {
+        id:66,
+        sn:5,
+        name:"Walking"
     },
     {
         id:34,
@@ -154,9 +164,20 @@ const physicalExercise = [
     }
 ]
 
-const sortItem = (payload) => {
-    return payload.sort((a, b) => a.updated_at < b.updated_at ? -1 : 1)
-}
+const intensity = [
+    {
+        id: 1,
+        name: "Low"
+    },
+    {
+        id: 2,
+        name: "Moderate"
+    },
+    {
+        id: 3,
+        name: "High"
+    }
+]
 
 module.exports = {
     setRedisData, 
@@ -164,6 +185,8 @@ module.exports = {
     setAuthenticationInfo, 
     setRegisterInfo,
     setHealthMetrics,
+    setExercise,
+    intensity,
     splitName,
     healthMetrics,
     physicalExercise

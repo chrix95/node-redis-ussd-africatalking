@@ -151,9 +151,13 @@ router.post("/", async ( req, res) => {
         // Split input into firstname and lastname
         const { status, data, metric } = await initiateRequest.getHealthMetrics(phoneNumber, ussd_string_exploded[1])
         if (status == "success" && data.length > 0) {
-            response += `CON Here is your ${metric.title} (${metric.measurement}) over the last 7 days: \n`
+            if (metric.measurement) {
+                response += `CON Here is your ${metric.title} in ${metric.measurement} over the last 7 days: \n`
+            } else {
+                response += `CON Here is your ${metric.title} over the last 7 days: \n`
+            }
             data.forEach(element => {
-                response += `${element.dateEntered.substring(0,10)}: ${element.value} ${metric.measurement} \n`
+                response += `${element.dateEntered.substring(0,10)}: ${element.value} ${metric.measurement ? metric.measurement : ""} \n`
             });
         } else {
             response += `CON Sorry you haven't entered any ${metric.title} health metric.\n`
@@ -164,12 +168,48 @@ router.post("/", async ( req, res) => {
         if (ussd_string_exploded[1] == 8) {
             const { title, measurement, sample } = await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1])
             response += `CON What is your ${title} (${measurement}) (Sample: ${sample})?`
+        } else if (ussd_string_exploded[1] == 6) {
+            response += `CON Type of activity \n`
+            utilsController.physicalExercise.forEach(element => {
+                response += `${element.sn}. ${element.name} \n`
+            });
         } else {
             const object = { type: await utilsController.healthMetrics.find(c => c.id == ussd_string_exploded[1]).code }
             utilsController.setHealthMetrics(sessionId, object)
             response += `CON What date is this measurement for? (DD/MM/YYYY)`
-            response += footer
         }
+        response += footer
+    } else if (ussd_string_exploded[0] === "5" && ussd_string_exploded[1] == 6 && $level === 3) {
+        const object = { exerciseActivityId: await utilsController.physicalExercise.find(c => c.sn == ussd_string_exploded[2]).id, type: "exercise" }
+        utilsController.setExercise(sessionId, object)
+        response += `CON Duration of exercise in minute \n`
+        response += footer
+    } else if (ussd_string_exploded[0] === "5" && ussd_string_exploded[1] == 6 && $level === 4) {
+        const object = { value:  ussd_string_exploded[3] }
+        utilsController.setExercise(sessionId, object)
+        response += `CON What is the intensity of your exercise? \n`
+        utilsController.intensity.forEach(element => {
+            response += `${element.id}. ${element.name} \n`
+        });
+        response += footer
+    } else if (ussd_string_exploded[0] === "5" && ussd_string_exploded[1] == 6 && $level === 5) {
+        const object = { exerciseIntensity:  await utilsController.intensity.find(c => c.id == ussd_string_exploded[4]).name }
+        utilsController.setExercise(sessionId, object)
+        response += `CON Date of exercise (DD/MM/YYYY): \n`
+        response += footer
+    } else if (ussd_string_exploded[0] === "5" && ussd_string_exploded[1] == 6 && $level === 6) {
+        const object = { date:  ussd_string_exploded[5].split("/").reverse().join("/") }
+        await utilsController.setExercise(sessionId, object)
+        // send the request
+        const payload = await utilsController.getRedisData(sessionId)
+        const { status } = await initiateRequest.sendHealthMetrics({ ...payload.exercise, ...{phone: phoneNumber.replace("+", "") }})
+        if (status == "success") {
+            // send a request to create the user account and response with feedback
+            response += `CON Thank you! Please visit mymdoc.com to access the CompleteHealth platform and view your progress.\n`
+        } else {
+            response += `CON Sorry we could not add your health metric at the moment, kindly try again`
+        }
+        response += footer
     } else if (ussd_string_exploded[0] === "5" && $level === 3) {
         if (ussd_string_exploded[1] == 8) {
             const object = { height:  ussd_string_exploded[2] }
