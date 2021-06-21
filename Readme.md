@@ -23,20 +23,7 @@ node app.js
 ```
 
 ## Usage
-
-```python
-
-
-Store Data:
-
-POST - /demo/store
-
-
-Retrieve Data:
-
-GEt - /demo/retrieve
-
-```
+Setup demo account on africa talking and connect the deploy to a liveserver or use ngrok to make the port public
 
 ## License
 
