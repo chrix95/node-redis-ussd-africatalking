@@ -3,6 +3,7 @@ const router = express.Router();
 const { ussdRouter } = require('ussd-router');
 const utilsController = require("../../controller/utils");
 const initiateRequest = require("../../functions");
+const request = require('request');
 
 router.post("/", async ( req, res) => {
     // Read variables sent via POST from our SDK
@@ -263,9 +264,18 @@ router.post("/", async ( req, res) => {
     res.status(200).send(response)
 })
 
-function handleHeight() {
-
-}
+router.get("/test", async(req, res) => {
+    //eventhough deprecated, still able to use
+    request('https://www.reddit.com', function (error, response, body) {
+        // console.error('error:', error); // Print the error if one occurred
+        // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        // console.log('body:', body); // Print the HTML for the Google homepage.
+        res.send({
+            status: response && response.statusCode == 200 ? response.statusCode : 400,
+            body: body ? body : error
+        })
+    });
+})
 
 module.exports = {
     router
